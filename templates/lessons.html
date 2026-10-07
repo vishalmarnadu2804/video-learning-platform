@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Course Lessons - Video Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Page Header -->
+  <div class="lessons-header-card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <span class="course-category-tag">Foundational Curriculum</span>
+        <h1 style="font-size: 2.1rem; font-weight: 800; color: var(--text-dark); margin: 6px 0 10px 0;">
+          Computer Science Fundamentals Course
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 680px;">
+          Master five essential pillars of software development: Python programming, HTML document structure, CSS web styling, JavaScript client interactivity, and SQL relational databases.
+        </p>
+      </div>
+
+      <!-- Quick Action Button -->
+      <div>
+        {% if overview.completed_lessons < overview.total_lessons %}
+          <a href="{{ url_for('lesson_view', lesson_number=overview.completed_lessons + 1) }}" class="btn btn-primary" id="btnResumeNextLesson">
+            Resume Next Lesson &rarr;
+          </a>
+        {% else %}
+          <a href="{{ url_for('lesson_view', lesson_number=1) }}" class="btn btn-success" id="btnReviewCourse">
+            Review Course &rarr;
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Student Progress Banner -->
+    <div class="progress-banner">
+      <div class="progress-header">
+        <span>
+          <strong>Your Course Progress:</strong> {{ overview.completed_lessons }} of {{ overview.total_lessons }} lessons completed
+        </span>
+        <span style="font-weight: 700; color: var(--primary-color);">
+          {{ overview.progress_pct }}%
+        </span>
+      </div>
+      <div class="progress-bar-container" style="height: 10px;">
+        <div 
+          class="progress-bar-fill {% if overview.progress_pct == 100 %}complete{% endif %}" 
+          style="width: {{ overview.progress_pct }}%;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exactly 5 Lessons Section -->
+  <div class="lessons-list-section">
+    <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-dark); margin-bottom: 20px;">
+      All 5 Lessons
+    </h2>
+
+    <div class="lesson-items">
+      {% for lesson in lessons %}
+        <div class="lesson-item {% if lesson.is_completed %}is-done{% endif %}" id="lessonCard-{{ lesson.lesson_number }}">
+          <div class="lesson-item-left">
+            <span class="lesson-order-badge">
+              {% if lesson.is_completed %}✓{% else %}{{ lesson.lesson_number }}{% endif %}
+            </span>
+            <div class="lesson-info">
+              <h4>Lesson {{ lesson.lesson_number }}: {{ lesson.title }}</h4>
+              <p>{{ lesson.description }}</p>
+            </div>
+          </div>
+
+          <div class="lesson-item-right">
+            <span class="lesson-duration">⏱ {{ lesson.duration }}</span>
+
+            {% if lesson.is_completed %}
+              <span class="status-badge completed">✓ Completed</span>
+            {% else %}
+              <span class="status-badge incomplete">Not Completed</span>
+            {% endif %}
+
+            <a href="{{ url_for('lesson_view', lesson_number=lesson.lesson_number) }}" 
+               class="btn {% if lesson.is_completed %}btn-secondary{% else %}btn-primary{% endif %} btn-sm" 
+               id="btnWatchLesson-{{ lesson.lesson_number }}">
+              {% if lesson.is_completed %}Review Lesson{% else %}Watch Lesson &rarr;{% endif %}
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

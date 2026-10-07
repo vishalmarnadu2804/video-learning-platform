@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - Video Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="{{ url_for('courses') }}">Courses</a>
+    <span class="breadcrumb-separator">/</span>
+    <span>{{ course.title }}</span>
+  </nav>
+
+  <!-- Course Header Card -->
+  <section class="course-header-card">
+    <span class="course-category-tag">{{ course.category }}</span>
+    <h1 class="course-detail-title">{{ course.title }}</h1>
+    <p class="course-detail-desc">{{ course.description }}</p>
+
+    <!-- Key Metrics Grid -->
+    <div class="course-stats-grid">
+      <div class="stat-item">
+        <span class="stat-label">Instructor</span>
+        <span class="stat-val">{{ course.instructor }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Total Lessons</span>
+        <span class="stat-val">{{ course.total_lessons }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Estimated Hours</span>
+        <span class="stat-val">{{ course.total_hours }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Your Progress</span>
+        <span class="stat-val">{{ course.progress_pct }}% Completed</span>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-wrapper" style="margin-top: 20px;">
+      <div class="progress-header">
+        <span>Course Completion Status ({{ course.completed_lessons }} of {{ course.total_lessons }} lessons done)</span>
+        <span>{{ course.progress_pct }}%</span>
+      </div>
+      <div class="progress-bar-container" style="height: 10px;">
+        <div 
+          class="progress-bar-fill {% if course.progress_pct == 100 %}complete{% endif %}" 
+          style="width: {{ course.progress_pct }}%;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson Syllabus / List -->
+  <section class="lesson-list-container">
+    <div class="lesson-list-header">
+      <h2 class="lesson-list-title">Course Curriculum ({{ lessons|length }} Lessons)</h2>
+      {% if lessons %}
+        <a href="{{ url_for('lesson_view', course_id=course.id, lesson_id=lessons[0].id) }}" class="btn btn-primary btn-sm" id="btnStartCourse">
+          {% if course.progress_pct > 0 and course.progress_pct < 100 %}Resume Learning{% elif course.progress_pct == 100 %}Review Course{% else %}Start Course{% endif %} &rarr;
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="lesson-items">
+      {% for lesson in lessons %}
+        <div class="lesson-item {% if lesson.is_completed %}is-done{% endif %}" id="lessonItem-{{ lesson.id }}">
+          <div class="lesson-item-left">
+            <span class="lesson-order-badge">
+              {% if lesson.is_completed %}✓{% else %}{{ lesson.lesson_order }}{% endif %}
+            </span>
+            <div class="lesson-info">
+              <h4>{{ lesson.lesson_order }}. {{ lesson.title }}</h4>
+              <p>{{ lesson.description }}</p>
+            </div>
+          </div>
+
+          <div class="lesson-item-right">
+            <span class="lesson-duration">⏱ {{ lesson.duration }}</span>
+
+            {% if lesson.is_completed %}
+              <span class="status-badge completed">✓ Completed</span>
+            {% else %}
+              <span class="status-badge incomplete">Incomplete</span>
+            {% endif %}
+
+            <a href="{{ url_for('lesson_view', course_id=course.id, lesson_id=lesson.id) }}" 
+               class="btn btn-outline-primary btn-sm" 
+               id="btnWatchLesson-{{ lesson.id }}">
+              Watch Lesson &rarr;
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

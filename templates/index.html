@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Video Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <span class="hero-badge">College MWP Mini Project</span>
+    <h1 class="hero-title">Video Learning Platform</h1>
+    <p class="hero-subtitle">
+      A lightweight and structured web platform designed to help students master core computer science topics through modular video lessons, clear lesson objectives, and persistent per-student progress tracking.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('lessons') }}" class="btn btn-primary btn-lg" id="btnStartLearning">
+        Start Learning &rarr;
+      </a>
+      {% if is_logged_in %}
+        <a href="{{ url_for('progress') }}" class="btn btn-secondary btn-lg" id="btnCheckProgressHero">
+          Check My Progress
+        </a>
+      {% else %}
+        <a href="{{ url_for('signup') }}" class="btn btn-secondary btn-lg" id="btnSignUpHero">
+          Create Student Account
+        </a>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Core Features Section -->
+  <section class="features-section">
+    <div class="section-header">
+      <h2 class="section-title">Core Platform Features</h2>
+      <p class="section-subtitle">Built with simple and robust web technologies for intuitive learning.</p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Feature 1: 5 Core Lessons -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">📚</div>
+        <h3>5 Foundational Lessons</h3>
+        <p>
+          Curated beginner curriculum covering Python programming, HTML markup, CSS styling, JavaScript interactivity, and SQL database management.
+        </p>
+      </div>
+
+      <!-- Feature 2: Embeddable Video Player -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">🎬</div>
+        <h3>Working YouTube Videos</h3>
+        <p>
+          High-definition educational video lessons embedded in responsive 16:9 iframes with full playback controls and lesson summary notes.
+        </p>
+      </div>
+
+      <!-- Feature 3: Per-Student Progress -->
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">📈</div>
+        <h3>Real SQLite Progress</h3>
+        <p>
+          Individual progress tracking linked directly to your student login. Mark lessons completed with persistence across logouts and refreshes.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Course Curriculum Overview Preview -->
+  <section class="curriculum-preview-section">
+    <div class="section-header">
+      <h2 class="section-title">Five Core Lessons</h2>
+      <p class="section-subtitle">Each lesson provides focused video instruction and actionable takeaways.</p>
+    </div>
+
+    <div class="curriculum-list-card">
+      <div class="curriculum-preview-item">
+        <div class="preview-number">1</div>
+        <div class="preview-info">
+          <h4>Introduction to Python</h4>
+          <p>Python syntax, variables, data types, interpreted execution, and environment setup.</p>
+        </div>
+        <span class="preview-tag">Python &bull; 15 mins</span>
+      </div>
+
+      <div class="curriculum-preview-item">
+        <div class="preview-number">2</div>
+        <div class="preview-info">
+          <h4>HTML Basics</h4>
+          <p>Semantic document structures, headings, paragraphs, lists, links, and forms.</p>
+        </div>
+        <span class="preview-tag">Web &bull; 20 mins</span>
+      </div>
+
+      <div class="curriculum-preview-item">
+        <div class="preview-number">3</div>
+        <div class="preview-info">
+          <h4>CSS Basics</h4>
+          <p>Visual styling, selectors, colors, typography, flexbox, and the CSS box model.</p>
+        </div>
+        <span class="preview-tag">Web &bull; 20 mins</span>
+      </div>
+
+      <div class="curriculum-preview-item">
+        <div class="preview-number">4</div>
+        <div class="preview-info">
+          <h4>JavaScript Basics</h4>
+          <p>Client-side interactivity, variables, functions, events, and DOM manipulation.</p>
+        </div>
+        <span class="preview-tag">Web &bull; 25 mins</span>
+      </div>
+
+      <div class="curriculum-preview-item">
+        <div class="preview-number">5</div>
+        <div class="preview-info">
+          <h4>SQL/Database Basics</h4>
+          <p>Relational databases, tables, primary/foreign keys, and standard SQL queries.</p>
+        </div>
+        <span class="preview-tag">Database &bull; 25 mins</span>
+      </div>
+
+      <div class="curriculum-preview-footer">
+        <a href="{{ url_for('lessons') }}" class="btn btn-primary" id="btnViewAllLessons">
+          View All Lessons &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

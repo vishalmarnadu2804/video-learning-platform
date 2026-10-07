@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}My Learning Progress - Video Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Page Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <span class="course-category-tag">Student Dashboard</span>
+      <h1 style="font-size: 2.1rem; font-weight: 800; color: var(--text-dark); margin: 6px 0 8px 0;">
+        My Learning Progress
+      </h1>
+      <p style="color: var(--text-muted); font-size: 1.05rem;">
+        Real-time academic metrics calculated dynamically from SQLite for <strong>{{ student_name }}</strong>.
+      </p>
+    </div>
+
+    <!-- Demo Reset Button -->
+    <form action="{{ url_for('reset_progress') }}" method="POST" onsubmit="return confirm('Are you sure you want to reset your lesson progress? This will reset your progress to 0/5.');">
+      <button type="submit" class="btn btn-outline-danger btn-sm" id="btnResetProgress">
+        ↺ Reset My Progress
+      </button>
+    </form>
+  </div>
+
+  <!-- Summary Statistics Grid -->
+  <div class="progress-summary-grid">
+    <div class="summary-card">
+      <div class="summary-card-number">{{ overview.total_lessons }}</div>
+      <div class="summary-card-label">Total Lessons</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-card-number green">{{ overview.completed_lessons }}</div>
+      <div class="summary-card-label">Lessons Completed</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-card-number">{{ overview.total_lessons - overview.completed_lessons }}</div>
+      <div class="summary-card-label">Lessons Remaining</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-card-number">{{ overview.progress_pct }}%</div>
+      <div class="summary-card-label">Overall Completion</div>
+    </div>
+  </div>
+
+  <!-- Prominent Dynamic Progress Bar -->
+  <div class="progress-banner-card">
+    <div class="progress-header" style="font-size: 1.05rem; margin-bottom: 10px;">
+      <span>
+        <strong>Course Completion Status:</strong> 
+        <span id="progressFractionText">{{ overview.completed_lessons }} / {{ overview.total_lessons }} lessons completed</span>
+      </span>
+      <span style="font-size: 1.2rem; font-weight: 800; color: var(--primary-color);">
+        {{ overview.progress_pct }}%
+      </span>
+    </div>
+    <div class="progress-bar-container" style="height: 14px;">
+      <div 
+        class="progress-bar-fill {% if overview.progress_pct == 100 %}complete{% endif %}" 
+        style="width: {{ overview.progress_pct }}%;">
+      </div>
+    </div>
+    <div style="margin-top: 10px; font-size: 0.88rem; color: var(--text-muted);">
+      {% if overview.completed_lessons == overview.total_lessons %}
+        🎉 Outstanding work! You have finished all 5 foundational lessons!
+      {% elif overview.completed_lessons > 0 %}
+        Keep going! Complete the remaining {{ overview.total_lessons - overview.completed_lessons }} lesson(s) to finish the course.
+      {% else %}
+        You haven't completed any lessons yet. Start with Lesson 1 below!
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Detailed Lesson Breakdown Table -->
+  <div class="progress-table-card">
+    <h2 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 20px; color: var(--text-dark);">
+      Lesson-by-Lesson Progress Breakdown
+    </h2>
+
+    <div style="overflow-x: auto;">
+      <table class="progress-table">
+        <thead>
+          <tr>
+            <th>Lesson #</th>
+            <th>Lesson Title</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th>Completion Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in overview.lessons %}
+            <tr id="progressRow-{{ l.lesson_number }}">
+              <td>
+                <span class="lesson-order-badge" style="width: 28px; height: 28px; font-size: 0.82rem;">
+                  {{ l.lesson_number }}
+                </span>
+              </td>
+              <td>
+                <strong style="color: var(--text-dark); font-size: 1rem;">{{ l.title }}</strong>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ l.description|truncate(80) }}</div>
+              </td>
+              <td>
+                <span style="font-size: 0.88rem; color: var(--text-muted);">⏱ {{ l.duration }}</span>
+              </td>
+              <td>
+                {% if l.is_completed %}
+                  <span class="status-badge completed">✓ Completed</span>
+                {% else %}
+                  <span class="status-badge incomplete">Not Completed</span>
+                {% endif %}
+              </td>
+              <td>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                  {% if l.is_completed and l.completed_at %}
+                    {{ l.completed_at }}
+                  {% else %}
+                    &mdash;
+                  {% endif %}
+                </span>
+              </td>
+              <td>
+                <a href="{{ url_for('lesson_view', lesson_number=l.lesson_number) }}" class="btn {% if l.is_completed %}btn-secondary{% else %}btn-primary{% endif %} btn-sm">
+                  {% if l.is_completed %}Review{% else %}Watch &rarr;{% endif %}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Academic Viva Note Box -->
+  <div class="academic-note-box">
+    <strong>Formula Note for College Viva Examination:</strong>
+    <p style="margin-top: 6px; margin-bottom: 0;">
+      Progress percentage is evaluated dynamically via SQL:
+      <code>Progress (%) = (Completed Lessons &divide; Total Lessons [5]) &times; 100</code>.
+      All completion records are tied strictly to <code>student_id = {{ student_id }}</code> in the SQLite <code>progress</code> table, ensuring complete multi-tenant privacy where no student can see or overwrite another student's progress.
+    </p>
+  </div>
+</div>
+{% endblock %}

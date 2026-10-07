@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ error_title|default("Page Not Found") }} - Video Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="error-card">
+    <span class="error-badge">404 Error</span>
+    <h1 class="error-title">{{ error_title|default("Page Not Found") }}</h1>
+    <p class="error-message">
+      {{ error_message|default("The requested page, course, or lesson could not be found.") }}
+    </p>
+
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="{{ url_for('lessons') }}" class="btn btn-primary" id="btnBackToCourses404">
+        &larr; View Lessons
+      </a>
+      <a href="{{ url_for('index') }}" class="btn btn-secondary" id="btnBackHome404">
+        Return to Home
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

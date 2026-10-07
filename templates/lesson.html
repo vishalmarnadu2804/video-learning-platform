@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Lesson {{ lesson.lesson_number }}: {{ lesson.title }} - Video Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Breadcrumb Navigation -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="{{ url_for('lessons') }}">Course Lessons</a>
+    <span class="breadcrumb-separator">/</span>
+    <span>Lesson {{ lesson.lesson_number }}</span>
+  </nav>
+
+  <div class="lesson-page-grid">
+    <!-- Main Left Column: Video Player & Details -->
+    <div class="video-section">
+      <!-- Responsive 16:9 YouTube Video Player Container -->
+      <div class="video-player-container">
+        <iframe 
+          id="mainLessonIframe"
+          src="{{ lesson.embed_url }}" 
+          title="{{ lesson.title }}" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerpolicy="strict-origin-when-cross-origin" 
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <!-- Video Metadata & Interactive Controls Card -->
+      <div class="video-meta-card">
+        <div class="lesson-top-bar">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="course-category-tag" style="margin: 0;">Foundational Course</span>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+              Lesson {{ lesson.lesson_number }} of {{ all_lessons|length }}
+            </span>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">⏱ {{ lesson.duration }}</span>
+            <span 
+              id="lessonStatusBadge" 
+              class="status-badge {% if lesson.is_completed %}completed{% else %}incomplete{% endif %}">
+              {% if lesson.is_completed %}✓ Completed{% else %}Not Completed{% endif %}
+            </span>
+          </div>
+        </div>
+
+        <h1 class="lesson-view-title">{{ lesson.lesson_number }}. {{ lesson.title }}</h1>
+        <p class="lesson-view-desc">{{ lesson.description }}</p>
+
+        <!-- Summary Notes for Students & Viva Preparation -->
+        {% if lesson.summary_notes %}
+          <div class="lesson-notes-box">
+            <h4>📖 Lesson Key Takeaways &amp; Viva Notes:</h4>
+            <p>{{ lesson.summary_notes }}</p>
+          </div>
+        {% endif %}
+
+        <!-- Interactive Controls Bar -->
+        <div class="lesson-controls-bar">
+          <!-- Back to Course Button -->
+          <a href="{{ url_for('lessons') }}" class="btn btn-secondary" id="btnBackToCourse">
+            &larr; Back to Course
+          </a>
+
+          <!-- Functional Mark as Completed Button (real backend SQLite update) -->
+          <div class="completion-controls">
+            <!-- AJAX Toggle Button -->
+            <button 
+              type="button" 
+              id="btnToggleComplete" 
+              data-lesson-number="{{ lesson.lesson_number }}" 
+              class="btn {% if lesson.is_completed %}btn-success{% else %}btn-outline-primary{% endif %}"
+              title="{% if lesson.is_completed %}Click to mark as incomplete{% else %}Click to mark as completed{% endif %}">
+              {% if lesson.is_completed %}
+                <span class="icon">✓</span> Completed
+              {% else %}
+                Mark as Completed
+              {% endif %}
+            </button>
+
+            <!-- Standard Fallback Form (for non-JS POST fallback) -->
+            <form 
+              id="fallbackCompleteForm" 
+              action="{{ url_for('complete_lesson_form', lesson_number=lesson.lesson_number) }}" 
+              method="POST" 
+              style="display: none;">
+              <input type="hidden" name="action" value="toggle">
+            </form>
+          </div>
+
+          <!-- Lesson Navigation: Previous & Next Buttons -->
+          <div class="nav-buttons-group">
+            {% if lesson.prev_lesson %}
+              <a 
+                href="{{ url_for('lesson_view', lesson_number=lesson.prev_lesson.lesson_number) }}" 
+                class="btn btn-secondary" 
+                id="btnPrevLesson"
+                title="Go to Lesson {{ lesson.prev_lesson.lesson_number }}: {{ lesson.prev_lesson.title }}">
+                &larr; Previous Lesson
+              </a>
+            {% else %}
+              <button class="btn btn-secondary" disabled id="btnPrevLesson" title="You are at the first lesson">
+                &larr; Previous Lesson
+              </button>
+            {% endif %}
+
+            {% if lesson.next_lesson %}
+              <a 
+                href="{{ url_for('lesson_view', lesson_number=lesson.next_lesson.lesson_number) }}" 
+                class="btn btn-primary" 
+                id="btnNextLesson"
+                title="Go to Lesson {{ lesson.next_lesson.lesson_number }}: {{ lesson.next_lesson.title }}">
+                Next Lesson &rarr;
+              </a>
+            {% else %}
+              <button class="btn btn-secondary" disabled id="btnNextLesson" title="You have reached the final lesson">
+                Next Lesson &rarr;
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar: Course Curriculum Playlist (All 5 Lessons) -->
+    <aside class="lesson-sidebar">
+      <div class="lesson-sidebar-card">
+        <h3 class="sidebar-title">Course Curriculum</h3>
+        <p class="sidebar-subtitle">5 Core Lessons Playlist</p>
+
+        <ul class="sidebar-playlist">
+          {% for l in all_lessons %}
+            <li 
+              class="playlist-item {% if l.lesson_number == lesson.lesson_number %}active{% endif %} {% if l.is_completed %}completed{% endif %}"
+              data-lesson-number="{{ l.lesson_number }}">
+              <a href="{{ url_for('lesson_view', lesson_number=l.lesson_number) }}">
+                <div style="display: flex; align-items: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <span class="playlist-order">
+                    {% if l.is_completed %}✓{% else %}{{ l.lesson_number }}{% endif %}
+                  </span>
+                  <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ l.title }}</span>
+                </div>
+                <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 8px;">{{ l.duration }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

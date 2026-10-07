@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}About Project - Video Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Main About Card -->
+  <section class="about-card">
+    <span class="hero-badge">Academic MWP Mini Project</span>
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-dark); margin-bottom: 16px;">
+      About Video Learning Platform
+    </h1>
+    <p>
+      <strong>Video Learning Platform</strong> is a clean, responsive, and robust academic mini project developed for college student demonstration in Mobile &amp; Web Programming (MWP). It offers a distraction-free environment for students to master 5 foundational computer science topics through real, embeddable YouTube video lessons and personalized progress tracking.
+    </p>
+    <p>
+      Unlike commercial platforms bloated with third-party trackers, popups, and complex front-end frameworks, this application adheres strictly to standard web engineering fundamentals: clean semantic HTML, modular Vanilla CSS, lightweight client-side JavaScript, Python Flask backend routing, secure Werkzeug password hashing, and persistent SQLite database storage.
+    </p>
+
+    <!-- Technology Stack Grid -->
+    <h2 style="margin-top: 36px;">Core Technologies &amp; Architecture</h2>
+    <div class="tech-stack-grid">
+      <div class="tech-box">
+        <h3>1. HTML5</h3>
+        <p>Semantic page structuring using &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, &lt;section&gt;, &lt;aside&gt;, and &lt;footer&gt; along with responsive 16:9 &lt;iframe&gt; embeds for high-definition video playback.</p>
+      </div>
+
+      <div class="tech-box">
+        <h3>2. Vanilla CSS</h3>
+        <p>Custom CSS design tokens, flexible grid layouts, responsive media queries, card components, and accessible form styling without heavyweight third-party CSS dependencies.</p>
+      </div>
+
+      <div class="tech-box">
+        <h3>3. Vanilla JavaScript</h3>
+        <p>Asynchronous AJAX requests via Fetch API for instantaneous lesson completion toggles, interactive status badges, dynamic progress toasts, and mobile navigation toggling.</p>
+      </div>
+
+      <div class="tech-box">
+        <h3>4. Python Flask</h3>
+        <p>Lightweight WSGI framework managing HTTP routes, Jinja2 template rendering, authentication decorators (<code>@login_required</code>), and secure cookie-based session state.</p>
+      </div>
+
+      <div class="tech-box">
+        <h3>5. SQLite Database</h3>
+        <p>Serverless, self-contained relational database storing students, lessons, and completion records with relational integrity, foreign key constraints, and dynamic SQL aggregation.</p>
+      </div>
+
+      <div class="tech-box">
+        <h3>6. Werkzeug Security</h3>
+        <p>Industrial-standard password hashing using <code>generate_password_hash()</code> and <code>check_password_hash()</code> to guarantee student passwords are never stored in plain text.</p>
+      </div>
+    </div>
+
+    <!-- The 5 Core Lessons -->
+    <h2 style="margin-top: 40px;">The 5 Foundational Lessons</h2>
+    <div style="background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px;">
+      <ol style="padding-left: 20px; display: flex; flex-direction: column; gap: 10px; font-size: 0.98rem;">
+        <li><strong>Lesson 1: Introduction to Python</strong> &mdash; Syntax basics, dynamic typing, variables, indentation rules, and first print script.</li>
+        <li><strong>Lesson 2: HTML Basics</strong> &mdash; Semantic tags, headings, paragraphs, lists, links, forms, and web document structure.</li>
+        <li><strong>Lesson 3: CSS Basics</strong> &mdash; Styling selectors, typography, colors, layout rules, flexbox, and the CSS box model.</li>
+        <li><strong>Lesson 4: JavaScript Basics</strong> &mdash; Scripting fundamentals, variables, functions, event handling, and dynamic DOM manipulation.</li>
+        <li><strong>Lesson 5: SQL/Database Basics</strong> &mdash; Relational database concepts, tables, primary/foreign keys, and CRUD queries (SELECT, INSERT, UPDATE, DELETE).</li>
+      </ol>
+    </div>
+
+    <!-- Database Schema Design -->
+    <h2 style="margin-top: 40px;">Database Schema Design (platform.db)</h2>
+    <p>The SQLite database implements 3 normalized relational tables:</p>
+
+    <div style="background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px;">
+      <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 14px; font-size: 0.95rem;">
+        <li>
+          <strong>1. <code>students</code>:</strong> 
+          <code>id (PK)</code>, <code>name (TEXT)</code>, <code>email (TEXT, UNIQUE)</code>, <code>password_hash (TEXT)</code>, <code>created_at (TIMESTAMP)</code>
+        </li>
+        <li>
+          <strong>2. <code>lessons</code>:</strong> 
+          <code>id (PK)</code>, <code>lesson_number (INTEGER, UNIQUE, 1-5)</code>, <code>title (TEXT)</code>, <code>description (TEXT)</code>, <code>video_id (TEXT)</code>, <code>embed_url (TEXT)</code>, <code>duration (TEXT)</code>, <code>summary_notes (TEXT)</code>
+        </li>
+        <li>
+          <strong>3. <code>progress</code>:</strong> 
+          <code>id (PK)</code>, <code>student_id (FK &rarr; students.id)</code>, <code>lesson_id (FK &rarr; lessons.id)</code>, <code>is_completed (INTEGER 0/1)</code>, <code>completed_at (TIMESTAMP)</code>, <code>UNIQUE(student_id, lesson_id)</code>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Viva Q&A Guide -->
+    <div class="viva-card">
+      <h3>Key Teacher Viva Q&amp;A Highlights</h3>
+      <ul class="viva-list">
+        <li>
+          <strong>Q: How are user passwords secured?</strong><br>
+          <em>Answer:</em> Passwords entered during registration are securely hashed via Werkzeug's <code>generate_password_hash()</code> using cryptographic salting (PBKDF2/scrypt). During login, <code>check_password_hash()</code> validates the credential against SQLite. Plain passwords are never stored.
+        </li>
+        <li>
+          <strong>Q: Why are YouTube videos embedded via iframes instead of HTML5 &lt;video&gt;?</strong><br>
+          <em>Answer:</em> YouTube watch URLs cannot be directly streamed by browser HTML5 &lt;video&gt; tags due to CORS and streaming protocol requirements. Proper YouTube embed URLs (<code>https://www.youtube.com/embed/VIDEO_ID</code>) loaded inside responsive 16:9 <code>&lt;iframe&gt;</code> elements allow YouTube's player to legally and reliably stream educational content.
+        </li>
+        <li>
+          <strong>Q: How does student progress isolation work?</strong><br>
+          <em>Answer:</em> The <code>progress</code> table enforces a composite uniqueness on <code>(student_id, lesson_id)</code>. All SQL queries filter with <code>WHERE student_id = session['student_id']</code>, meaning Student A marking lessons completed never affects Student B.
+        </li>
+        <li>
+          <strong>Q: How does dynamic progress calculation prevent tampering?</strong><br>
+          <em>Answer:</em> Progress is computed directly on the server via SQLite: <code>(COUNT(completed) / 5) * 100</code>. This avoids relying on insecure browser localStorage or fake JavaScript counters.
+        </li>
+      </ul>
+    </div>
+  </section>
+</div>
+{% endblock %}
